@@ -42,6 +42,9 @@ public class RicartAgrawala
 			
 			// Listeners
 			initializeSystem(nodeID);
+			
+			makeConnections(nodeID);
+			
 		} 
 		catch (Exception e)
 		{
@@ -83,6 +86,31 @@ public class RicartAgrawala
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+	}
+	
+	public static void makeConnections(int nodeID)
+	{
+		Socket socket;
+		for(int i=1;i<=NUMNODES;i++)
+		{
+			if (nodeID > i)
+			{
+				int port = Integer.parseInt(ReadConfig.map.get(Integer.toString(i)).get(1));
+				String host = ReadConfig.map.get(Integer.toString(i)).get(2);
+				try
+				{
+					System.out.println("Connecting "+host+":"+port);
+					socket = new Socket(host,port);
+					System.out.println("Connection established");
+				}
+				catch (IOException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			}
 		}
 	}
 }
