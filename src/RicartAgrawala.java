@@ -22,7 +22,9 @@ public class RicartAgrawala
 		}
 		try 
 		{
-			// Do Calculations
+			// Bad way of reading config
+			// TODO: Fix later.
+			NUMNODES = ReadConfig.main();
 		} 
 		catch (Exception e)
 		{

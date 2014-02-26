@@ -1,0 +1,5 @@
+# Any text following '#' should be ignored
+2 # Total number of nodes
+#NodeID - HostName - Port
+0 127.0.0.1 50000 # Location of node 0
+1 127.0.0.1 51000 # Location of node 1
