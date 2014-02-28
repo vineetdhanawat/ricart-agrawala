@@ -32,6 +32,14 @@ public class ConnectionThread extends Thread
 					socket = new Socket(host,port);
 					System.out.println("Connection established");
 					
+					System.out.println("Socket at "+nodeID+" for send to "+i);
+					System.out.println(socket);
+					
+					//RicartAgrawala.sockets.add(socket);
+					RicartAgrawala.socketMap.put(Integer.toString(i),socket);
+					RicartAgrawala.readers.put(socket,new BufferedReader(new InputStreamReader(socket.getInputStream())));
+					RicartAgrawala.writers.put(socket,new PrintWriter(socket.getOutputStream()));
+					
 		            PrintWriter writer = new PrintWriter(socket.getOutputStream());
 		            writer.println("Hello World from:"+nodeID);
 	                writer.flush();

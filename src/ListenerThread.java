@@ -27,21 +27,29 @@ public class ListenerThread extends Thread
 			System.out.println("Node "+nodeID+" listening at "+port);
 			
 			// First connection
+			int i = 0;
 			while (NUMNODES>1)
 			{
 				//Listens for a connection to be made to this socket and accepts it
 				//The method blocks until a connection is made
-				System.out.println("Before Accept");
-				Socket tmp = server.accept();
-				System.out.println("After Accept");
-				RicartAgrawala.sockets.add(tmp);
-				RicartAgrawala.readers.put(tmp,new BufferedReader(new InputStreamReader(tmp.getInputStream())));
-				RicartAgrawala.writers.put(tmp,new PrintWriter(tmp.getOutputStream()));
+				Socket socket = server.accept();
+				System.out.println("Socket at "+nodeID+" for listening "+i + " "+ socket);
+				System.out.println("-------------------------");
+				//RicartAgrawala.sockets.add(socket);
 				
-				PrintWriter writer = RicartAgrawala.writers.get(tmp);
+				RicartAgrawala.socketMap.put(Integer.toString(i),socket);
+				RicartAgrawala.readers.put(socket,new BufferedReader(new InputStreamReader(socket.getInputStream())));
+				RicartAgrawala.writers.put(socket,new PrintWriter(socket.getOutputStream()));
+				
+				PrintWriter writer = RicartAgrawala.writers.get(socket);
                 writer.println("Hello World from:"+nodeID);
                 writer.flush();
-	            System.out.println("Reading Message "+RicartAgrawala.readers.get(tmp).readLine());
+	            System.out.println("Reading Message "+RicartAgrawala.readers.get(socket).readLine());
+	            
+	            // incrementing i so that all incoming connections can be put in array in order.
+	            i++;
+	            
+	            // Total no of incoming connections left
 	            NUMNODES--;
 			}
 		}
