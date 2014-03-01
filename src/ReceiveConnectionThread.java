@@ -40,8 +40,6 @@ public class ReceiveConnectionThread extends Thread
 				Server.readers.put(socket,new BufferedReader(new InputStreamReader(socket.getInputStream())));
 				Server.writers.put(socket,new PrintWriter(socket.getOutputStream()));
 				
-				PrintWriter writer = Server.writers.get(socket);
-				
 	            // incrementing i so that all incoming connections can be put in array in order.
 	            i++;
 	            

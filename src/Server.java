@@ -5,7 +5,11 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TimerTask;
@@ -13,7 +17,8 @@ import java.util.TimerTask;
 public class Server 
 {
 	public static ServerSocket server;
-    
+	RicartAgrawala RA;
+	
 	// Hashmaps used to store sockets, read and write buffers
     public static HashMap<String,Socket> socketMap = new HashMap<String,Socket>();
     public static HashMap<Socket,BufferedReader> readers = new HashMap<Socket,BufferedReader>();
@@ -50,15 +55,15 @@ public class Server
 			ReceiveConnectionThread RCT = new ReceiveConnectionThread(nodeID,NUMNODES);
 			System.out.println("Listener Started");
 			
-			// Sleep so that all Listeners can be started
-			Thread.sleep(5000);
+			// Sleep so that all servers/listeners can can be started
+			Thread.sleep(10000);
 			
 			SendConnectionThread SCT = new SendConnectionThread(nodeID,NUMNODES);
 			
 			// Sleep so that socket connections can be made
 			Thread.sleep(5000);
 			
-			// Starting threads to always read listeners
+			// Starting threads for always read listeners
 			for (int i=0;i<NUMNODES;i++)
 			{
 				if (i!=nodeID)
@@ -70,8 +75,35 @@ public class Server
 			}
 			
 			// TEST Broadcast
-			broadcast("ALERT");
+			//broadcast("ALERT");
 			
+			// Node
+			//Thread.sleep(5000);
+            
+/*			Date date=new Date();
+			Timestamp timestamp = new Timestamp(date.getTime());//instead of date put your converted date
+			String ts = timestamp.toString();
+			System.out.println("timestamp="+ts);
+			
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
+			Date date2 = dateFormat.parse(ts);
+
+			Timestamp timestamp2 = new Timestamp(date.getTime());//instead of date put your converted date
+			System.out.println("converted ts="+timestamp2);*/
+			
+			
+			// Initialization Message
+			if (nodeID == 0)
+			{
+				new Thread()
+				{
+					public void run()
+					{
+						broadcast("START");
+					}
+				 }.start();
+				 RicartAgrawala.requestCriticalSection();
+			}
 		}
 		catch (Exception e)
 		{
@@ -102,7 +134,7 @@ public class Server
 					System.out.println("Sending "+message+" to "+i);
 					Socket bs = socketMap.get(Integer.toString(i));
 					PrintWriter writer = writers.get(bs);
-		            writer.println(message+nodeID);
+		            writer.println(message);
 	                writer.flush();
 				}
 				catch(Exception ex)
