@@ -7,10 +7,10 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class ConnectionThread extends Thread
+public class SendConnectionThread extends Thread
 {
 	int nodeID, NUMNODES;
-	ConnectionThread(int nodeID, int NUMNODES)
+	SendConnectionThread(int nodeID, int NUMNODES)
 	{
 		super();
 		start();
@@ -32,19 +32,12 @@ public class ConnectionThread extends Thread
 					socket = new Socket(host,port);
 					System.out.println("Connection established");
 					
-					System.out.println("Socket at "+nodeID+" for send to "+i);
-					System.out.println(socket);
+					System.out.println("Socket at "+nodeID+" for sending to "+i + " "+ socket);
+					System.out.println("-------------------------");
 					
-					//RicartAgrawala.sockets.add(socket);
-					RicartAgrawala.socketMap.put(Integer.toString(i),socket);
-					RicartAgrawala.readers.put(socket,new BufferedReader(new InputStreamReader(socket.getInputStream())));
-					RicartAgrawala.writers.put(socket,new PrintWriter(socket.getOutputStream()));
-					
-		            PrintWriter writer = new PrintWriter(socket.getOutputStream());
-		            writer.println("Hello World from:"+nodeID);
-	                writer.flush();
-	                BufferedReader BR = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-	                System.out.println("Reading Message "+ BR.readLine());
+					Server.socketMap.put(Integer.toString(i),socket);
+					Server.readers.put(socket,new BufferedReader(new InputStreamReader(socket.getInputStream())));
+					Server.writers.put(socket,new PrintWriter(socket.getOutputStream()));
 				}
 				catch (IOException e)
 				{

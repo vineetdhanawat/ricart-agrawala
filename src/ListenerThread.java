@@ -9,51 +9,34 @@ import java.util.HashMap;
 
 public class ListenerThread extends Thread
 {
-	int nodeID, NUMNODES;
-	ListenerThread(int nodeID, int NUMNODES)
+	Socket socket;
+	BufferedReader BR;
+	ListenerThread(Socket socket)
 	{
 		super();
 		start();
-		this.nodeID = nodeID;
-		this.NUMNODES = NUMNODES;
+		this.socket = socket;
+		try {
+			BR = Server.readers.get(socket);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//this.NUMNODES = NUMNODES;
 	}
+
 	public void run()
 	{
+		String message;
 		try
 		{
-			// Start Server at the specified port
-			int port = Integer.parseInt(ReadConfig.map.get(Integer.toString(nodeID)).get(1));
-			ServerSocket server = new ServerSocket(port);
-			System.out.println("Node "+nodeID+" listening at "+port);
-			
-			// First connection
-			int i = 0;
-			while (NUMNODES>1)
+			while(( message = BR.readLine() ) != null)
 			{
-				//Listens for a connection to be made to this socket and accepts it
-				//The method blocks until a connection is made
-				Socket socket = server.accept();
-				System.out.println("Socket at "+nodeID+" for listening "+i + " "+ socket);
-				System.out.println("-------------------------");
-				//RicartAgrawala.sockets.add(socket);
-				
-				RicartAgrawala.socketMap.put(Integer.toString(i),socket);
-				RicartAgrawala.readers.put(socket,new BufferedReader(new InputStreamReader(socket.getInputStream())));
-				RicartAgrawala.writers.put(socket,new PrintWriter(socket.getOutputStream()));
-				
-				PrintWriter writer = RicartAgrawala.writers.get(socket);
-                writer.println("Hello World from:"+nodeID);
-                writer.flush();
-	            System.out.println("Reading Message "+RicartAgrawala.readers.get(socket).readLine());
-	            
-	            // incrementing i so that all incoming connections can be put in array in order.
-	            i++;
-	            
-	            // Total no of incoming connections left
-	            NUMNODES--;
+				System.out.println("RECEIVED MESSAGE:::" + message);
 			}
+			
 		}
-		catch (IOException e)
+		catch (Exception e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();

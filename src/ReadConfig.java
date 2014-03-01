@@ -19,7 +19,6 @@ public class ReadConfig
 			{
 				if (!sCurrentLine.startsWith("#"))
 				{
-					//System.out.println(sCurrentLine);
 					String[] tokens = sCurrentLine.split(" ");
 					if(tokens[1].equals("#"))
 					{

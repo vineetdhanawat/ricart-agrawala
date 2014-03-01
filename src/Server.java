@@ -10,24 +10,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.TimerTask;
 
-public class RicartAgrawala 
+public class Server 
 {
 	public static ServerSocket server;
-    public static ArrayList<Socket> sockets = new ArrayList<Socket>();
     
+	// Hashmaps used to store sockets, read and write buffers
     public static HashMap<String,Socket> socketMap = new HashMap<String,Socket>();
     public static HashMap<Socket,BufferedReader> readers = new HashMap<Socket,BufferedReader>();
     public static HashMap<Socket,PrintWriter> writers = new HashMap<Socket,PrintWriter>();
 
 	// Total number of nodes in the system
 	public static int NUMNODES = 0;
+	// ID number of this node instance
 	public static int nodeID = 0;
 	
 	public static void main(String[] args)
 	{		
 		
 		// User will let the node know its nodeID
-
 		if (args.length > 0)
 		{
 			try
@@ -47,34 +47,30 @@ public class RicartAgrawala
 			NUMNODES = ReadConfig.main();
 			
 			//Must Be Run In A New Thread To Avoid Thread Blocking
-			ListenerThread LT = new ListenerThread(nodeID,NUMNODES);
+			ReceiveConnectionThread RCT = new ReceiveConnectionThread(nodeID,NUMNODES);
 			System.out.println("Listener Started");
 			
+			// Sleep so that all Listeners can be started
 			Thread.sleep(5000);
 			
-			ConnectionThread CT = new ConnectionThread(nodeID,NUMNODES);
+			SendConnectionThread SCT = new SendConnectionThread(nodeID,NUMNODES);
 			
+			// Sleep so that socket connections can be made
 			Thread.sleep(5000);
-			
-			Socket socket;
 			
 			// Starting threads to always read listeners
 			for (int i=0;i<NUMNODES;i++)
 			{
 				if (i!=nodeID)
 				{
-					ReadSocket RS = new ReadSocket(socketMap.get(Integer.toString(i)));
+					ListenerThread RS = new ListenerThread(socketMap.get(Integer.toString(i)));
 					System.out.println("SocketID"+RS);
 					System.out.println("Started thread at "+nodeID+" for listening "+i);
 				}
 			}
 			
-			//broadcast("ALERT");
-			
-			// TEST SEND
-			/*if (nodeID == 1)
-			send("BROADCAST",socketMap.get(Integer.toString(2)));
-			 */
+			// TEST Broadcast
+			broadcast("ALERT");
 			
 		}
 		catch (Exception e)
@@ -97,7 +93,7 @@ public class RicartAgrawala
 	*/
 	public static void broadcast(String message)
 	{
-		for(int i = 0; i < NUMNODES; i++)
+		for(int i=0; i<NUMNODES; i++)
 		{
 			if (i!=nodeID)
 			{
