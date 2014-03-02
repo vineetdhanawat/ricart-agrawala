@@ -12,7 +12,7 @@ import java.util.HashMap;
 
 public class ListenerThread extends Thread
 {
-	Timestamp messageTS;
+	Timestamp messageTS, currentTS;
 	Socket socket;
 	BufferedReader BR;
 	ListenerThread(Socket socket)
@@ -26,7 +26,6 @@ public class ListenerThread extends Thread
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		//this.NUMNODES = NUMNODES;
 	}
 
 	public void run()
@@ -37,44 +36,58 @@ public class ListenerThread extends Thread
 			while((message = BR.readLine() ) != null)
 			{
 				//System.out.println("RECEIVED MESSAGE:::" + message);
+				String tokens[] = message.split(",");
+				String messageType = tokens[0];
 				
-				if(message.equals("START"))
+				if(messageType.equals("START"))
 				{
 					RicartAgrawala.requestCriticalSection();
 				}
 				
-				if(message.equals("REPLY"))
+				if(messageType.equals("REPLY"))
 				{
 					RicartAgrawala.replyCount++;
-					System.out.println("REPLYCOUNT:"+RicartAgrawala.replyCount);
+					System.out.println("REPLYCOUNT:"+RicartAgrawala.replyCount+":REPLYFROM"+tokens[1]);
 					if (RicartAgrawala.replyCount == Server.NUMNODES-1)
-						System.out.println("CRITICAL SECTION");
+					{
+						RicartAgrawala.criticalSection = true;
+			            java.util.Date date= new java.util.Date();
+			            currentTS = new Timestamp(date.getTime());
+						System.out.println("CRITICAL SECTION:"+currentTS);
+						
+						// Delay of 20 milliseconds
+						Thread.sleep(20);
+						
+						// Reset this node
+						RicartAgrawala.criticalSection = false;
+						RicartAgrawala.requestCS = false;
+						RicartAgrawala.replyCount = 0;
+						RicartAgrawala.criticalSectionCount++;
+						RicartAgrawala.sendDeferredReplies();
+						RicartAgrawala.requestCriticalSection();
+					}
 				}
 				
-				String tokens[] = message.split(",");
-				String messageType = tokens[0];
-
 				if(messageType.equals("REQUEST"))
 				{
-					System.out.println("SERVER REQUEST:"+RicartAgrawala.requestTS);
+					System.out.println("SERVER-TS REQUEST:"+RicartAgrawala.requestTS);
 					SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
 					Date date = dateFormat.parse(tokens[1]);
 					messageTS = new Timestamp(date.getTime());
-					System.out.println("MESSAGE REQUEST:"+messageTS);
+					System.out.println("MESSAGE-TS REQUEST:"+messageTS);
 					System.out.println("----------------------------------");
-					if(RicartAgrawala.requestCS == false || (RicartAgrawala.requestCS == true && 
-							RicartAgrawala.requestTS.after(messageTS)))
+					if((RicartAgrawala.requestCS == false &&  RicartAgrawala.criticalSection == false)
+							|| (RicartAgrawala.requestCS == true && RicartAgrawala.requestTS.after(messageTS)))
             		{
 						// Reply
-						System.out.println("Sending reply for this above request");
-						System.out.println("requestCS"+RicartAgrawala.requestCS);
 						PrintWriter writer = Server.writers.get(socket);
-						writer.println("REPLY");
+						writer.println("REPLY"+","+Server.nodeID);
 			            writer.flush();
             		}
 					else
 					{
 						// defer REPLY
+						RicartAgrawala.deferred.add(tokens[2]);
 					}
 				}
 			}
