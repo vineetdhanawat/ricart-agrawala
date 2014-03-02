@@ -91,6 +91,12 @@ public class Server
 			Timestamp timestamp2 = new Timestamp(date.getTime());//instead of date put your converted date
 			System.out.println("converted ts="+timestamp2);*/
 			
+			// Adding initial participants list for optimization
+/*			for (int j=0; j < NUMNODES; j++)
+			{
+				RicartAgrawala.participants.add(String.valueOf(j));
+				//public static ArrayList<String> participants = new ArrayList<String>();
+			}*/
 			
 			// Initialization Message
 			if (nodeID == 0)
