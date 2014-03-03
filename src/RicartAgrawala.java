@@ -1,3 +1,6 @@
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.sql.Timestamp;
@@ -10,21 +13,24 @@ import java.util.Random;
 
 public class RicartAgrawala {
 	
-	static Timestamp requestTS,currentTS;
+	static Timestamp requestTS;
 	static int criticalSectionCount = 0;
-	static boolean requestCS;
+	static boolean requestCS = false;
 	static boolean criticalSection = false;
+	static int nodeCompletetionCount = 0;
+	static boolean nodeZeroCompletetion = false;
 	static int replyCount = 0;
 	
 	public static ArrayList<String> deferred = new ArrayList<String>();
-	public static ArrayList<String> participants = new ArrayList<String>();
-	static ArrayList<String> copyOfParticipants = new ArrayList<String>();
-	public static int participantsCount = 0;
+	//public static ArrayList<String> participants = new ArrayList<String>();
+	//static ArrayList<String> copyOfParticipants = new ArrayList<String>();
+	//public static int participantsCount = 0;
+	
 	// TODO Algorithm Class
 	public static void requestCriticalSection()
 	{
 		// limiting total no of desired critical sections
-		if (criticalSectionCount < 40)
+		if (criticalSectionCount < 20)
 		{
 			// delay critical section call randomly
 			Random rn = new Random();
@@ -39,10 +45,12 @@ public class RicartAgrawala {
 			
 			System.out.println(Server.nodeID+" ready to enter CS");
 			RicartAgrawala.requestCS = true;
+			
             java.util.Date date= new java.util.Date();
             requestTS = new Timestamp(date.getTime());
+			//requestTS = TimeStamp.getTimestamp();
             
-            if (criticalSectionCount == 0)
+            //if (criticalSectionCount == 0)
             {
     			for(int i=0; i<Server.NUMNODES; i++)
     			{
@@ -63,7 +71,7 @@ public class RicartAgrawala {
     				}
     			}
             }
-            else
+            /*else
             {
             	copyOfParticipants.addAll(participants);
             	participantsCount = copyOfParticipants.size();
@@ -126,11 +134,25 @@ public class RicartAgrawala {
                 	}
                 	copyOfParticipants.clear();
             	}
-            }
+            }*/
 		}
 		else
 		{
 			System.out.println("GAMEOVER");
+			// TODO Implement Terminating Condition
+			/*if (Server.nodeID !=0)
+			{
+				Socket bs = Server.socketMap.get(0);
+				PrintWriter writer = Server.writers.get(bs);
+				writer.println("COMPLETE"+","+Server.nodeID);
+	            writer.flush();
+			}
+			else
+			{
+				nodeZeroCompletetion = true;
+				if (RicartAgrawala.nodeCompletetionCount == Server.NUMNODES-1)
+					System.out.println("ALLLLLL OVERRRRR");
+			}*/
 		}
 	}
 	
@@ -151,9 +173,64 @@ public class RicartAgrawala {
 			{
 				ex.printStackTrace();
 			}
-			participants.add(deferredNode);
+			//participants.add(deferredNode);
 		}
 		//clearing arraylist for reuse
 		deferred.clear();
+	}
+	
+	public static synchronized void checkCS()
+	{
+		if (RicartAgrawala.replyCount == Server.NUMNODES-1)
+			/*if ((RicartAgrawala.criticalSectionCount == 0 && 
+					RicartAgrawala.replyCount == Server.NUMNODES-1) || 
+					RicartAgrawala.replyCount == RicartAgrawala.participantsCount)*/
+			{
+				RicartAgrawala.criticalSection = true;
+	            
+				/*java.util.Date date= new java.util.Date();
+	            Timestamp currentTS1 = new Timestamp(date.getTime());*/
+				
+				Timestamp currentTS1 = TimeStamp.getTimestamp();
+	            WriteToFile.execute(RicartAgrawala.requestTS,currentTS1,"entered");
+
+				System.out.println("CRITICAL SECTION:"+ RicartAgrawala.criticalSectionCount +":"
+	            +currentTS1);
+				
+				// Delay of 20 milliseconds
+				try {
+					Thread.sleep(20);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				// Reset this node
+				RicartAgrawala.criticalSection = false;
+				RicartAgrawala.requestCS = false;
+				RicartAgrawala.replyCount = 0;
+				RicartAgrawala.criticalSectionCount++;
+				
+				/*java.util.Date date1= new java.util.Date();
+				Timestamp currentTS2 = new Timestamp(date1.getTime());*/
+				
+				Timestamp currentTS2 = TimeStamp.getTimestamp();
+				WriteToFile.execute(RicartAgrawala.requestTS,currentTS2,"exited");
+				RicartAgrawala.sendDeferredReplies();
+				
+				/*if (Server.nodeID % 2 == 0)
+				{
+					Random rn = new Random();
+					int time = 200 + rn.nextInt(300);
+					try {
+						Thread.sleep(time);
+						System.out.println("delay of "+time);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}*/
+				RicartAgrawala.requestCriticalSection();
+			}
 	}
 }
