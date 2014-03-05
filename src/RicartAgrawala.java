@@ -78,7 +78,13 @@ public class RicartAgrawala {
             	participantsCount = copyOfParticipants.size();
             	if (copyOfParticipants.isEmpty())
             	{
+            		
+            		new Thread()
+    				{
+            		public void run(){
             		RicartAgrawala.criticalSection = true;
+            		long currentTS1 = TimeStamp.getTimestamp();
+    	            WriteToFile.execute(RicartAgrawala.requestTS,currentTS1,"entered");
 		            java.util.Date date1= new java.util.Date();
 		            long currentTS = TimeStamp.getTimestamp();
 					System.out.println("CRITICAL SECTION:"+ RicartAgrawala.criticalSectionCount +":"
@@ -97,6 +103,8 @@ public class RicartAgrawala {
 					RicartAgrawala.requestCS = false;
 					RicartAgrawala.replyCount = 0;
 					RicartAgrawala.criticalSectionCount++;
+					long currentTS2 = TimeStamp.getTimestamp();
+		            WriteToFile.execute(RicartAgrawala.requestTS,currentTS2,"exited");
 					RicartAgrawala.sendDeferredReplies();
 					
 					if (RicartAgrawala.criticalSectionCount> 20 && Server.nodeID % 2 == 0)
@@ -112,6 +120,9 @@ public class RicartAgrawala {
 						}
 					}
 					RicartAgrawala.requestCriticalSection();
+    				}
+    				}.start();
+					
 				}
             	else
             	{
@@ -236,4 +247,8 @@ public class RicartAgrawala {
 				RicartAgrawala.requestCriticalSection();
 			}
 	}
+	
+	public static synchronized void incrementCount() {
+		replyCount++;
+    }
 }
