@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 
 public class ListenerThread extends Thread
 {
-	Timestamp messageTS, currentTS;
+	long messageTS, currentTS;
 	Socket socket;
 	BufferedReader BR;
 	
@@ -64,7 +64,7 @@ public class ListenerThread extends Thread
 					++RicartAgrawala.replyCount;
 
 					// optimization
-					//RicartAgrawala.participants.remove(tokens[1]);
+					RicartAgrawala.participants.remove(tokens[1]);
 					
 					System.out.println("REPLYCOUNT:"+RicartAgrawala.replyCount+":REPLYFROM"+tokens[1]);
 					RicartAgrawala.checkCS();
@@ -77,15 +77,25 @@ public class ListenerThread extends Thread
 					/*SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SS");
 					Date date = dateFormat.parse(tokens[1]);
 					messageTS = new Timestamp(date.getTime());*/
-					messageTS = Timestamp.valueOf(tokens[1]);
+					
+					//messageTS = Timestamp.valueOf(tokens[1]);
+					messageTS = Long.parseLong(tokens[1]);
 					
 					System.out.println("MESSAGE-TS REQUEST:"+tokens[2]+":"+messageTS);
 					System.out.println("----------------------------------");
 					
-					if(RicartAgrawala.criticalSection == false && ((RicartAgrawala.requestCS == false)
-							|| (RicartAgrawala.requestCS == true && RicartAgrawala.requestTS.after(messageTS))
-							|| (RicartAgrawala.requestCS == true && RicartAgrawala.requestTS.equals(messageTS)
+					if(RicartAgrawala.criticalSection == false && 
+							((RicartAgrawala.requestCS == false)
+							|| (RicartAgrawala.requestCS == true && RicartAgrawala.requestTS > messageTS)
+							|| (RicartAgrawala.requestCS == true && RicartAgrawala.requestTS == messageTS
 							 && Server.nodeID > Integer.parseInt(tokens[2]))))
+					/*if(RicartAgrawala.criticalSection == false &&
+							(RicartAgrawala.requestCS == false ||
+							(RicartAgrawala.requestCS == true && 
+							(RicartAgrawala.requestTS.after(messageTS) || 
+									Server.nodeID > Integer.parseInt(tokens[2])))))*/
+						
+					
             		{
 						System.out.println("REPLY SENT TO:"+tokens[2]);
 						// Reply
@@ -93,12 +103,24 @@ public class ListenerThread extends Thread
 						writer.println("REPLY"+","+Server.nodeID);
 			            writer.flush();
 			            
+			            if (RicartAgrawala.requestCS == true && RicartAgrawala.criticalSection == false 
+			            		&& RicartAgrawala.criticalSectionCount != 0 && !(RicartAgrawala.copyOfParticipants.contains(tokens[2])))
+			            {
+			            	++RicartAgrawala.participantsCount;
+			            	PrintWriter writer2 = Server.writers.get(socket);
+			            	long requestTS = TimeStamp.getTimestamp();
+    			            writer.println("REQUEST,"+requestTS+","+Server.nodeID);
+    			            writer.flush();
+    			            System.out.println("Sending delayed request to"+tokens[2]+":"+requestTS);
+			            }
+			            
 			            // optimization
-			            //RicartAgrawala.participants.add(tokens[2]);
+			            RicartAgrawala.participants.add(tokens[2]);
             		}
 					else
 					{
 						// defer REPLY
+						System.out.println("Deferred reply to "+tokens[2]);
 						RicartAgrawala.deferred.add(tokens[2]);
 					}
 				}

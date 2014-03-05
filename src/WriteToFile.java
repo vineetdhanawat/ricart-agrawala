@@ -6,7 +6,7 @@ import java.sql.Timestamp;
 
 public class WriteToFile {
 
-	public synchronized static void execute(Timestamp rq, Timestamp ts, String status)
+	public synchronized static void execute(long rq, long ts, String status)
 	{
 		try
 		{
