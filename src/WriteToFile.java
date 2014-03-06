@@ -24,7 +24,7 @@ public class WriteToFile {
 		}
 	}
 	
-	public synchronized static void report(long rq, long ts, String status)
+	public synchronized static void report(String status)
 	{
 		try
 		{
@@ -35,7 +35,7 @@ public class WriteToFile {
 			}
 			FileWriter fw = new FileWriter(file.getAbsoluteFile(), true);
 			BufferedWriter bw = new BufferedWriter(fw);
-				bw.write("Node "+Server.nodeID+ " requested at "+ rq+ ":"+status + " cs:" + ts + "\n");
+				bw.write("Node "+Server.nodeID+ status + "\n");
 			bw.close();
 		} catch (Exception e) {
 			e.printStackTrace();

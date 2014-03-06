@@ -59,6 +59,7 @@ public class ListenerThread extends Thread
 					RicartAgrawala.nodeZeroCompletetion == true)
 					{
 						System.out.println("ALLLLLL OVERRRRR:"+RicartAgrawala.totalRequestsSent);
+						WriteToFile.report("TOTAL MESSAGES:"+RicartAgrawala.totalRequestsSent);
 					}
 				}
 				
