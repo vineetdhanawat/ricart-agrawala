@@ -20,6 +20,7 @@ public class RicartAgrawala {
 	static int nodeCompletetionCount = 0;
 	static boolean nodeZeroCompletetion = false;
 	static int replyCount = 0;
+	static long totalRequestsSent = 0;
 	
 	public static ArrayList<String> deferred = new ArrayList<String>();
 	public static ArrayList<String> participants = new ArrayList<String>();
@@ -84,7 +85,7 @@ public class RicartAgrawala {
             		public void run(){
             		RicartAgrawala.criticalSection = true;
             		long currentTS1 = TimeStamp.getTimestamp();
-    	            WriteToFile.execute(RicartAgrawala.requestTS,currentTS1,"entered");
+    	            WriteToFile.log(RicartAgrawala.requestTS,currentTS1,"entered");
 		            java.util.Date date1= new java.util.Date();
 		            long currentTS = TimeStamp.getTimestamp();
 					System.out.println("CRITICAL SECTION:"+ RicartAgrawala.criticalSectionCount +":"
@@ -104,7 +105,7 @@ public class RicartAgrawala {
 					RicartAgrawala.replyCount = 0;
 					RicartAgrawala.criticalSectionCount++;
 					long currentTS2 = TimeStamp.getTimestamp();
-		            WriteToFile.execute(RicartAgrawala.requestTS,currentTS2,"exited");
+		            WriteToFile.log(RicartAgrawala.requestTS,currentTS2,"exited");
 					RicartAgrawala.sendDeferredReplies();
 					
 					if (RicartAgrawala.criticalSectionCount> 20 && Server.nodeID % 2 == 0)
@@ -156,14 +157,16 @@ public class RicartAgrawala {
 			{
 				Socket bs = Server.socketMap.get("0");
 				PrintWriter writer = Server.writers.get(bs);
-				writer.println("COMPLETE"+","+Server.nodeID);
+				writer.println("COMPLETE"+","+totalRequestsSent);
 	            writer.flush();
 			}
 			else
 			{
 				nodeZeroCompletetion = true;
 				if (RicartAgrawala.nodeCompletetionCount == Server.NUMNODES-1)
-					System.out.println("ALLLLLL OVERRRRR");
+				{
+					System.out.println("ALLLLLL OVERRRRR:"+totalRequestsSent);
+				}
 			}
 		}
 	}
@@ -201,12 +204,13 @@ public class RicartAgrawala {
 					RicartAgrawala.replyCount == RicartAgrawala.participantsCount)
 			{
 				RicartAgrawala.criticalSection = true;
+				totalRequestsSent += replyCount;
 	            
 				/*java.util.Date date= new java.util.Date();
 	            Timestamp currentTS1 = new Timestamp(date.getTime());*/
 				
 				long currentTS1 = TimeStamp.getTimestamp();
-	            WriteToFile.execute(RicartAgrawala.requestTS,currentTS1,"entered");
+	            WriteToFile.log(RicartAgrawala.requestTS,currentTS1,"entered");
 
 				System.out.println("CRITICAL SECTION:"+ RicartAgrawala.criticalSectionCount +":"
 	            +currentTS1);
@@ -229,7 +233,7 @@ public class RicartAgrawala {
 				Timestamp currentTS2 = new Timestamp(date1.getTime());*/
 				
 				long currentTS2 = TimeStamp.getTimestamp();
-				WriteToFile.execute(RicartAgrawala.requestTS,currentTS2,"exited");
+				WriteToFile.log(RicartAgrawala.requestTS,currentTS2,"exited");
 				RicartAgrawala.sendDeferredReplies();
 				
 				if (Server.nodeID % 2 == 0 && criticalSectionCount > 20)

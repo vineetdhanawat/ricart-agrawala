@@ -54,9 +54,12 @@ public class ListenerThread extends Thread
 				if(messageType.equals("COMPLETE"))
 				{
 					RicartAgrawala.nodeCompletetionCount++;
+					RicartAgrawala.totalRequestsSent += Integer.parseInt(tokens[1]);
 					if (RicartAgrawala.nodeCompletetionCount == Server.NUMNODES-1 && 
 					RicartAgrawala.nodeZeroCompletetion == true)
-						System.out.println("ALLLLLL OVERRRRR");
+					{
+						System.out.println("ALLLLLL OVERRRRR:"+RicartAgrawala.totalRequestsSent);
+					}
 				}
 				
 				if(messageType.equals("REPLY"))
