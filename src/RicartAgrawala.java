@@ -152,9 +152,9 @@ public class RicartAgrawala {
 		{
 			System.out.println("GAMEOVER");
 			// TODO Implement Terminating Condition
-			/*if (Server.nodeID !=0)
+			if (Server.nodeID !=0)
 			{
-				Socket bs = Server.socketMap.get(0);
+				Socket bs = Server.socketMap.get("0");
 				PrintWriter writer = Server.writers.get(bs);
 				writer.println("COMPLETE"+","+Server.nodeID);
 	            writer.flush();
@@ -164,7 +164,7 @@ public class RicartAgrawala {
 				nodeZeroCompletetion = true;
 				if (RicartAgrawala.nodeCompletetionCount == Server.NUMNODES-1)
 					System.out.println("ALLLLLL OVERRRRR");
-			}*/
+			}
 		}
 	}
 	

@@ -51,13 +51,13 @@ public class ListenerThread extends Thread
 				}
 				
 				// TODO Implement Terminating Condition
-				/*if(messageType.equals("COMPLETE"))
+				if(messageType.equals("COMPLETE"))
 				{
 					RicartAgrawala.nodeCompletetionCount++;
 					if (RicartAgrawala.nodeCompletetionCount == Server.NUMNODES-1 && 
 					RicartAgrawala.nodeZeroCompletetion == true)
 						System.out.println("ALLLLLL OVERRRRR");
-				}*/
+				}
 				
 				if(messageType.equals("REPLY"))
 				{
