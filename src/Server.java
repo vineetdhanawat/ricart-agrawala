@@ -51,12 +51,13 @@ public class Server
 			// TODO: Fix later.
 			NUMNODES = ReadConfig.main();
 			
+			System.out.println("TOTAL NODES:"+NUMNODES);
 			//Must Be Run In A New Thread To Avoid Thread Blocking
 			ReceiveConnectionThread RCT = new ReceiveConnectionThread(nodeID,NUMNODES);
 			System.out.println("Listener Started");
 			
 			// Sleep so that all servers/listeners can can be started
-			Thread.sleep(10000);
+			Thread.sleep(15000);
 			
 			SendConnectionThread SCT = new SendConnectionThread(nodeID,NUMNODES);
 			

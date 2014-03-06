@@ -23,7 +23,7 @@ public class ReadConfig
 					if(tokens[1].equals("#"))
 					{
 						totalNodes = Integer.parseInt(tokens[0]);
-						//System.out.println(totalNodes);
+						System.out.println(totalNodes);
 					}
 					else
 					{
@@ -31,20 +31,20 @@ public class ReadConfig
 						valueList.add(tokens[1]);
 						valueList.add(tokens[2]);
 						map.put(tokens[0], valueList);
-						
-						// Testing the HashMap output
-						/*for (Map.Entry<String, List<String>> entry : map.entrySet())
-						{
-							String key = entry.getKey();	
-							List<String> values = entry.getValue();							
-							System.out.println("Key = " + key);
-							System.out.println("Values = " + values);
-							// get(o) is host get(1) is port
-							System.out.println("Values = " + values.get(0));
-							System.out.println("Values = " + values.get(1));
-						}*/
 					}
 				}
+			}
+			
+			// Testing the HashMap output
+			for (Map.Entry<String, List<String>> entry : map.entrySet())
+			{
+				String key = entry.getKey();	
+				List<String> values = entry.getValue();							
+				System.out.println("Key = " + key);
+				System.out.println("Values = " + values);
+				// get(o) is host get(1) is port
+				//System.out.println("Values = " + values.get(0));
+				//System.out.println("Values = " + values.get(1));
 			}
 	
 		} catch (IOException e) 
