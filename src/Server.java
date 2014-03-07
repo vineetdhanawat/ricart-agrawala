@@ -151,4 +151,41 @@ public class Server
 			}
 		}
 	}
+	
+	public static void closeSockets()
+	{
+		System.out.println("Halting this node");
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		for(int i=0; i<NUMNODES; i++)
+		{
+			//if (i!=nodeID)
+			{
+				try
+				{	
+					System.out.println("Closing socket with "+Integer.toString(i));
+					Socket socket = socketMap.get(Integer.toString(i));
+					if (socket != null)
+					{
+						PrintWriter writer = writers.get(socket);
+						BufferedReader BR = readers.get(socket);
+						writer.close();
+						BR.close();
+						socket.close();
+						System.out.println("Closed socket with "+Integer.toString(i));
+					}
+				}
+				catch(Exception ex)
+				{
+					ex.printStackTrace();
+				}
+			}
+		}
+		System.exit(0);
+	}
 }

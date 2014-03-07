@@ -60,7 +60,21 @@ public class ListenerThread extends Thread
 					{
 						System.out.println("ALLLLLL OVERRRRR:"+RicartAgrawala.totalRequestsSent);
 						WriteToFile.report("TOTAL MESSAGES:"+RicartAgrawala.totalRequestsSent);
+						Server.broadcast("HALT");
+						/*try {
+							Thread.sleep(5000);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}*/
+						Server.closeSockets();
 					}
+				}
+				
+				if(messageType.equals("HALT"))
+				{
+					//Thread.sleep(5000);
+					Server.closeSockets();
 				}
 				
 				if(messageType.equals("REPLY"))
@@ -138,7 +152,7 @@ public class ListenerThread extends Thread
 		catch (Exception e)
 		{
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			// e.printStackTrace();
 		}
 	}
 }

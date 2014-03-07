@@ -109,7 +109,7 @@ public class RicartAgrawala {
 						e1.printStackTrace();
 					}
 					
-					WriteToFile.report(Server.nodeID+" Messages:"+2*replyCount+" Time Elapsed:"+timeElapsed);
+					WriteToFile.report(" Messages:"+2*replyCount+" Time Elapsed:"+timeElapsed);
 					
 					// Reset this node
 					RicartAgrawala.criticalSection = false;
@@ -142,7 +142,8 @@ public class RicartAgrawala {
             		
             		for(String item: copyOfParticipants)
                 	{
-        				if (Integer.parseInt(item)!= Server.nodeID)
+            			String Null = null;
+        				if (Server.nodeID != Integer.parseInt(item))
         				{
         					try
         					{
@@ -165,7 +166,7 @@ public class RicartAgrawala {
 		{
 			System.out.println("GAMEOVER");
 			// TODO Implement Terminating Condition
-			WriteToFile.report(Server.nodeID+" Maximum Messages:"+maxMessagesExchanged
+			WriteToFile.report(" Maximum Messages:"+maxMessagesExchanged
 					+" Minimum Messages:"+minMessagesExchanged);
 
 			if (Server.nodeID !=0)
@@ -182,6 +183,14 @@ public class RicartAgrawala {
 				{
 					System.out.println("ALLLLLL OVERRRRR:"+totalRequestsSent);
 					WriteToFile.report("TOTAL MESSAGES:"+totalRequestsSent);
+					/*try {
+						Thread.sleep(5000);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}*/
+					Server.broadcast("HALT");
+					Server.closeSockets();
 				}
 			}
 		}
@@ -245,7 +254,7 @@ public class RicartAgrawala {
 					e.printStackTrace();
 				}
 				
-				WriteToFile.report(Server.nodeID+" Messages:"+2*replyCount+" Time Elapsed:"+timeElapsed);
+				WriteToFile.report(" Messages:"+2*replyCount+" Time Elapsed:"+timeElapsed);
 				
 				// Reset this node
 				RicartAgrawala.criticalSection = false;
