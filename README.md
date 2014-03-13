@@ -38,15 +38,14 @@ Report the following
  2 127.0.0.1 52000 # Location of node 2
 
 ## Usage
+	$ java -jar ricartagrwala 0
+	$ java -jar ricartagrwala 1
+	$ java -jar ricartagrwala <n>
+
 - Export a runnable jar file using eclipse.
 - Place config.txt and ricartagrawala.jar in same folder on all the nodes.
 - Execute commands on all the nodes in sequence, <n> = node number
-	
-	java -jar ricartagrwala 0
-	java -jar ricartagrwala 1
-	java -jar ricartagrwala <n>
-
-- Thread hs a time delay of 15 seconds to start all the nodes.
+- Thread has a time delay of 15 seconds to start all the nodes.
 
 ## License
 
