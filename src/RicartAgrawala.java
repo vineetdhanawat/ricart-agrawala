@@ -47,7 +47,7 @@ public class RicartAgrawala {
 				e.printStackTrace();
 			}
 			
-			System.out.println(Server.nodeID+" ready to enter CS");
+			System.out.println(Node.nodeID+" ready to enter CS");
 			RicartAgrawala.requestCS = true;
 			
             java.util.Date date= new java.util.Date();
@@ -56,18 +56,18 @@ public class RicartAgrawala {
             
             if (criticalSectionCount == 0)
             {
-            	maxMessagesExchanged = 2*(Server.NUMNODES-1);
-            	minMessagesExchanged = 2*(Server.NUMNODES-1);
+            	maxMessagesExchanged = 2*(Node.NUMNODES-1);
+            	minMessagesExchanged = 2*(Node.NUMNODES-1);
             	
-    			for(int i=0; i<Server.NUMNODES; i++)
+    			for(int i=0; i<Node.NUMNODES; i++)
     			{
-    				if (i!=Server.nodeID)
+    				if (i!=Node.nodeID)
     				{
     					try
     					{
-    						Socket bs = Server.socketMap.get(Integer.toString(i));
-    						PrintWriter writer = Server.writers.get(bs);
-    			            writer.println("REQUEST,"+requestTS+","+Server.nodeID);
+    						Socket bs = Node.socketMap.get(Integer.toString(i));
+    						PrintWriter writer = Node.writers.get(bs);
+    			            writer.println("REQUEST,"+requestTS+","+Node.nodeID);
     			            writer.flush();
     			            System.out.println("Sending request to others at:"+requestTS);
     					}
@@ -120,7 +120,7 @@ public class RicartAgrawala {
 		            WriteToFile.log(RicartAgrawala.requestTS,currentTS2,"exited");
 					RicartAgrawala.sendDeferredReplies();
 					
-					if (RicartAgrawala.criticalSectionCount> 20 && Server.nodeID % 2 == 0)
+					if (RicartAgrawala.criticalSectionCount> 20 && Node.nodeID % 2 == 0)
 					{
 						Random rn1 = new Random();
 						int time1 = 200 + rn1.nextInt(300);
@@ -143,13 +143,13 @@ public class RicartAgrawala {
             		for(String item: copyOfParticipants)
                 	{
             			String Null = null;
-        				if (Server.nodeID != Integer.parseInt(item))
+        				if (Node.nodeID != Integer.parseInt(item))
         				{
         					try
         					{
-        						Socket bs = Server.socketMap.get(item);
-        						PrintWriter writer = Server.writers.get(bs);
-        			            writer.println("REQUEST,"+requestTS+","+Server.nodeID);
+        						Socket bs = Node.socketMap.get(item);
+        						PrintWriter writer = Node.writers.get(bs);
+        			            writer.println("REQUEST,"+requestTS+","+Node.nodeID);
         			            writer.flush();
         			            System.out.println("Sending request to"+item+":"+requestTS);
         					}
@@ -169,17 +169,17 @@ public class RicartAgrawala {
 			WriteToFile.report(" Maximum Messages:"+maxMessagesExchanged
 					+" Minimum Messages:"+minMessagesExchanged);
 
-			if (Server.nodeID !=0)
+			if (Node.nodeID !=0)
 			{
-				Socket bs = Server.socketMap.get("0");
-				PrintWriter writer = Server.writers.get(bs);
+				Socket bs = Node.socketMap.get("0");
+				PrintWriter writer = Node.writers.get(bs);
 				writer.println("COMPLETE"+","+totalRequestsSent);
 	            writer.flush();
 			}
 			else
 			{
 				nodeZeroCompletetion = true;
-				if (RicartAgrawala.nodeCompletetionCount == Server.NUMNODES-1)
+				if (RicartAgrawala.nodeCompletetionCount == Node.NUMNODES-1)
 				{
 					System.out.println("ALLLLLL OVERRRRR:"+totalRequestsSent);
 					WriteToFile.report("TOTAL MESSAGES:"+totalRequestsSent);
@@ -189,8 +189,8 @@ public class RicartAgrawala {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}*/
-					Server.broadcast("HALT");
-					Server.closeSockets();
+					Node.broadcast("HALT");
+					Node.closeSockets();
 				}
 			}
 		}
@@ -206,9 +206,9 @@ public class RicartAgrawala {
 			System.out.println("Sending deferred replies to:"+deferredNode);
 			try
 			{
-				Socket bs = Server.socketMap.get(deferredNode);
-				PrintWriter writer = Server.writers.get(bs);
-				writer.println("REPLY"+","+Server.nodeID);
+				Socket bs = Node.socketMap.get(deferredNode);
+				PrintWriter writer = Node.writers.get(bs);
+				writer.println("REPLY"+","+Node.nodeID);
 	            writer.flush();
 			}
 			catch(Exception ex)
@@ -223,9 +223,9 @@ public class RicartAgrawala {
 	
 	public static synchronized void checkCS()
 	{
-		//if (RicartAgrawala.replyCount == Server.NUMNODES-1)
+		//if (RicartAgrawala.replyCount == Node.NUMNODES-1)
 			if ((RicartAgrawala.criticalSectionCount == 0 && 
-					RicartAgrawala.replyCount == Server.NUMNODES-1) || 
+					RicartAgrawala.replyCount == Node.NUMNODES-1) || 
 					RicartAgrawala.replyCount == RicartAgrawala.participantsCount)
 			{
 				RicartAgrawala.criticalSection = true;
@@ -269,7 +269,7 @@ public class RicartAgrawala {
 				WriteToFile.log(RicartAgrawala.requestTS,currentTS2,"exited");
 				RicartAgrawala.sendDeferredReplies();
 				
-				if (Server.nodeID % 2 == 0 && criticalSectionCount > 20)
+				if (Node.nodeID % 2 == 0 && criticalSectionCount > 20)
 				{
 					Random rn = new Random();
 					int time = 200 + rn.nextInt(300);

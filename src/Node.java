@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.TimerTask;
 
-public class Server 
+public class Node 
 {
 	public static ServerSocket server;
 	RicartAgrawala RA;

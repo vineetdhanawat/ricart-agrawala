@@ -21,7 +21,7 @@ public class ReceiveConnectionThread extends Thread
 	{
 		try
 		{
-			// Start Server at the specified port
+			// Start Node at the specified port
 			int port = Integer.parseInt(ReadConfig.map.get(Integer.toString(nodeID)).get(1));
 			ServerSocket server = new ServerSocket(port);
 			System.out.println("Node "+nodeID+" listening at "+port);
@@ -36,9 +36,9 @@ public class ReceiveConnectionThread extends Thread
 				System.out.println("Socket at "+nodeID+" for listening "+i + " "+ socket);
 				System.out.println("-------------------------");
 				
-				Server.socketMap.put(Integer.toString(i),socket);
-				Server.readers.put(socket,new BufferedReader(new InputStreamReader(socket.getInputStream())));
-				Server.writers.put(socket,new PrintWriter(socket.getOutputStream()));
+				Node.socketMap.put(Integer.toString(i),socket);
+				Node.readers.put(socket,new BufferedReader(new InputStreamReader(socket.getInputStream())));
+				Node.writers.put(socket,new PrintWriter(socket.getOutputStream()));
 				
 	            // incrementing i so that all incoming connections can be put in array in order.
 	            i++;

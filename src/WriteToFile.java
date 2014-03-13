@@ -17,7 +17,7 @@ public class WriteToFile {
 			}
 			FileWriter fw = new FileWriter(file.getAbsoluteFile(), true);
 			BufferedWriter bw = new BufferedWriter(fw);
-				bw.write("Node "+Server.nodeID+ " requested at "+ rq+ ":"+status + " cs:" + ts + "\n");
+				bw.write("Node "+Node.nodeID+ " requested at "+ rq+ ":"+status + " cs:" + ts + "\n");
 			bw.close();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -35,7 +35,7 @@ public class WriteToFile {
 			}
 			FileWriter fw = new FileWriter(file.getAbsoluteFile(), true);
 			BufferedWriter bw = new BufferedWriter(fw);
-				bw.write("Node "+Server.nodeID+ status + "\n");
+				bw.write("Node "+Node.nodeID+ status + "\n");
 			bw.close();
 		} catch (Exception e) {
 			e.printStackTrace();

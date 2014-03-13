@@ -35,9 +35,9 @@ public class SendConnectionThread extends Thread
 					System.out.println("Socket at "+nodeID+" for sending to "+i + " "+ socket);
 					System.out.println("-------------------------");
 					
-					Server.socketMap.put(Integer.toString(i),socket);
-					Server.readers.put(socket,new BufferedReader(new InputStreamReader(socket.getInputStream())));
-					Server.writers.put(socket,new PrintWriter(socket.getOutputStream()));
+					Node.socketMap.put(Integer.toString(i),socket);
+					Node.readers.put(socket,new BufferedReader(new InputStreamReader(socket.getInputStream())));
+					Node.writers.put(socket,new PrintWriter(socket.getOutputStream()));
 				}
 				catch (IOException e)
 				{

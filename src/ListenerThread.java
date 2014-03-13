@@ -27,7 +27,7 @@ public class ListenerThread extends Thread
 		start();
 		this.socket = socket;
 		try {
-			BR = Server.readers.get(socket);
+			BR = Node.readers.get(socket);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -55,26 +55,26 @@ public class ListenerThread extends Thread
 				{
 					RicartAgrawala.nodeCompletetionCount++;
 					RicartAgrawala.totalRequestsSent += Integer.parseInt(tokens[1]);
-					if (RicartAgrawala.nodeCompletetionCount == Server.NUMNODES-1 && 
+					if (RicartAgrawala.nodeCompletetionCount == Node.NUMNODES-1 && 
 					RicartAgrawala.nodeZeroCompletetion == true)
 					{
 						System.out.println("ALLLLLL OVERRRRR:"+RicartAgrawala.totalRequestsSent);
 						WriteToFile.report("TOTAL MESSAGES:"+RicartAgrawala.totalRequestsSent);
-						Server.broadcast("HALT");
+						Node.broadcast("HALT");
 						/*try {
 							Thread.sleep(5000);
 						} catch (InterruptedException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}*/
-						Server.closeSockets();
+						Node.closeSockets();
 					}
 				}
 				
 				if(messageType.equals("HALT"))
 				{
 					//Thread.sleep(5000);
-					Server.closeSockets();
+					Node.closeSockets();
 				}
 				
 				if(messageType.equals("REPLY"))
@@ -108,12 +108,12 @@ public class ListenerThread extends Thread
 							((RicartAgrawala.requestCS == false)
 							|| (RicartAgrawala.requestCS == true && RicartAgrawala.requestTS > messageTS)
 							|| (RicartAgrawala.requestCS == true && RicartAgrawala.requestTS == messageTS
-							 && Server.nodeID > Integer.parseInt(tokens[2]))))
+							 && Node.nodeID > Integer.parseInt(tokens[2]))))
 					/*if(RicartAgrawala.criticalSection == false &&
 							(RicartAgrawala.requestCS == false ||
 							(RicartAgrawala.requestCS == true && 
 							(RicartAgrawala.requestTS.after(messageTS) || 
-									Server.nodeID > Integer.parseInt(tokens[2])))))*/
+									Node.nodeID > Integer.parseInt(tokens[2])))))*/
 						
 					
             		{
@@ -121,17 +121,17 @@ public class ListenerThread extends Thread
 			            		&& RicartAgrawala.criticalSectionCount != 0 && !(RicartAgrawala.copyOfParticipants.contains(tokens[2])))
 			            {
 			            	++RicartAgrawala.participantsCount;
-			            	PrintWriter writer2 = Server.writers.get(socket);
+			            	PrintWriter writer2 = Node.writers.get(socket);
 			            	long requestTS = TimeStamp.getTimestamp();
-    			            writer2.println("REQUEST,"+requestTS+","+Server.nodeID);
+    			            writer2.println("REQUEST,"+requestTS+","+Node.nodeID);
     			            writer2.flush();
     			            System.out.println("Sending delayed request to"+tokens[2]+":"+requestTS);
 			            }
 						
 						System.out.println("REPLY SENT TO:"+tokens[2]);
 						// Reply
-						PrintWriter writer = Server.writers.get(socket);
-						writer.println("REPLY"+","+Server.nodeID);
+						PrintWriter writer = Node.writers.get(socket);
+						writer.println("REPLY"+","+Node.nodeID);
 			            writer.flush();
 			            
 			            
