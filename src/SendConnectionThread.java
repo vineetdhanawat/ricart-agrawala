@@ -10,12 +10,14 @@ import java.util.HashMap;
 public class SendConnectionThread extends Thread
 {
 	int nodeID, NUMNODES;
-	SendConnectionThread(int nodeID, int NUMNODES)
+	InputOutputHandler IOH;
+	SendConnectionThread(int nodeID, int NUMNODES, InputOutputHandler IOH)
 	{
 		super();
 		start();
 		this.nodeID = nodeID;
 		this.NUMNODES = NUMNODES;
+		this.IOH = IOH;
 	}
 	public void run()
 	{
@@ -24,8 +26,8 @@ public class SendConnectionThread extends Thread
 		{
 			if (nodeID < i)
 			{
-				String host = ReadConfig.map.get(Integer.toString(i)).get(0);
-				int port = Integer.parseInt(ReadConfig.map.get(Integer.toString(i)).get(1));
+				String host = IOH.map.get(Integer.toString(i)).get(0);
+				int port = Integer.parseInt(IOH.map.get(Integer.toString(i)).get(1));
 				try
 				{
 					System.out.println("Connecting "+host+":"+port);

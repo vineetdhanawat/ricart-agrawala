@@ -20,12 +20,16 @@ public class ListenerThread extends Thread
 	long messageTS, currentTS;
 	Socket socket;
 	BufferedReader BR;
+	RicartAgrawala RA;
+	InputOutputHandler IOH;
 	
-	ListenerThread(Socket socket)
+	ListenerThread(Socket socket, InputOutputHandler IOH, RicartAgrawala RA)
 	{
 		super();
 		start();
 		this.socket = socket;
+		this.RA = RA;
+		this.IOH = IOH;
 		try {
 			BR = Node.readers.get(socket);
 		} catch (Exception e) {
@@ -47,19 +51,19 @@ public class ListenerThread extends Thread
 				
 				if(messageType.equals("START"))
 				{
-					RicartAgrawala.requestCriticalSection();
+					RA.requestCriticalSection();
 				}
 				
 				// TODO Implement Terminating Condition
 				if(messageType.equals("COMPLETE"))
 				{
-					RicartAgrawala.nodeCompletetionCount++;
-					RicartAgrawala.totalRequestsSent += Integer.parseInt(tokens[1]);
-					if (RicartAgrawala.nodeCompletetionCount == Node.NUMNODES-1 && 
-					RicartAgrawala.nodeZeroCompletetion == true)
+					RA.nodeCompletetionCount++;
+					RA.totalRequestsSent += Integer.parseInt(tokens[1]);
+					if (RA.nodeCompletetionCount == Node.NUMNODES-1 && 
+					RA.nodeZeroCompletetion == true)
 					{
-						System.out.println("ALLLLLL OVERRRRR:"+RicartAgrawala.totalRequestsSent);
-						WriteToFile.report("TOTAL MESSAGES:"+RicartAgrawala.totalRequestsSent);
+						System.out.println("ALLLLLL OVERRRRR:"+RA.totalRequestsSent);
+						IOH.report("TOTAL MESSAGES:"+RA.totalRequestsSent);
 						Node.broadcast("HALT");
 						/*try {
 							Thread.sleep(5000);
@@ -81,19 +85,19 @@ public class ListenerThread extends Thread
 				{
 					
 					//++RicartAgrawala.replyCount;
-					RicartAgrawala.incrementCount();
+					RA.incrementCount();
 
 					// optimization
-					RicartAgrawala.participants.remove(tokens[1]);
+					RA.participants.remove(tokens[1]);
 					
-					System.out.println("REPLYCOUNT:"+RicartAgrawala.replyCount+":REPLYFROM"+tokens[1]);
-					RicartAgrawala.checkCS();
+					System.out.println("REPLYCOUNT:"+RA.replyCount+":REPLYFROM"+tokens[1]);
+					RA.checkCS();
 				}
 				
 				if(messageType.equals("REQUEST"))
 				{
 						
-					System.out.println("SERVER-TS REQUEST:"+RicartAgrawala.requestTS);
+					System.out.println("SERVER-TS REQUEST:"+RA.requestTS);
 					/*SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SS");
 					Date date = dateFormat.parse(tokens[1]);
 					messageTS = new Timestamp(date.getTime());*/
@@ -104,10 +108,10 @@ public class ListenerThread extends Thread
 					System.out.println("MESSAGE-TS REQUEST:"+tokens[2]+":"+messageTS);
 					System.out.println("----------------------------------");
 					
-					if(RicartAgrawala.criticalSection == false && 
-							((RicartAgrawala.requestCS == false)
-							|| (RicartAgrawala.requestCS == true && RicartAgrawala.requestTS > messageTS)
-							|| (RicartAgrawala.requestCS == true && RicartAgrawala.requestTS == messageTS
+					if(RA.criticalSection == false && 
+							((RA.requestCS == false)
+							|| (RA.requestCS == true && RA.requestTS > messageTS)
+							|| (RA.requestCS == true && RA.requestTS == messageTS
 							 && Node.nodeID > Integer.parseInt(tokens[2]))))
 					/*if(RicartAgrawala.criticalSection == false &&
 							(RicartAgrawala.requestCS == false ||
@@ -117,10 +121,10 @@ public class ListenerThread extends Thread
 						
 					
             		{
-						if (RicartAgrawala.requestCS == true && RicartAgrawala.criticalSection == false 
-			            		&& RicartAgrawala.criticalSectionCount != 0 && !(RicartAgrawala.copyOfParticipants.contains(tokens[2])))
+						if (RA.requestCS == true && RA.criticalSection == false 
+			            		&& RA.criticalSectionCount != 0 && !(RA.copyOfParticipants.contains(tokens[2])))
 			            {
-			            	++RicartAgrawala.participantsCount;
+			            	++RA.participantsCount;
 			            	PrintWriter writer2 = Node.writers.get(socket);
 			            	long requestTS = TimeStamp.getTimestamp();
     			            writer2.println("REQUEST,"+requestTS+","+Node.nodeID);
@@ -137,13 +141,13 @@ public class ListenerThread extends Thread
 			            
 			            
 			            // optimization
-			            RicartAgrawala.participants.add(tokens[2]);
+			            RA.participants.add(tokens[2]);
             		}
 					else
 					{
 						// defer REPLY
 						System.out.println("Deferred reply to "+tokens[2]);
-						RicartAgrawala.deferred.add(tokens[2]);
+						RA.deferred.add(tokens[2]);
 					}
 				}
 			}

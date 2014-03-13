@@ -10,19 +10,21 @@ import java.util.HashMap;
 public class ReceiveConnectionThread extends Thread
 {
 	int nodeID, NUMNODES;
-	ReceiveConnectionThread(int nodeID, int NUMNODES)
+	InputOutputHandler IOH;
+	ReceiveConnectionThread(int nodeID, int NUMNODES, InputOutputHandler IOH)
 	{
 		super();
 		start();
 		this.nodeID = nodeID;
 		this.NUMNODES = NUMNODES;
+		this.IOH = IOH;
 	}
 	public void run()
 	{
 		try
 		{
 			// Start Node at the specified port
-			int port = Integer.parseInt(ReadConfig.map.get(Integer.toString(nodeID)).get(1));
+			int port = Integer.parseInt(IOH.map.get(Integer.toString(nodeID)).get(1));
 			ServerSocket server = new ServerSocket(port);
 			System.out.println("Node "+nodeID+" listening at "+port);
 			

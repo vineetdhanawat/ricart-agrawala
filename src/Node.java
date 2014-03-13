@@ -17,7 +17,6 @@ import java.util.TimerTask;
 public class Node 
 {
 	public static ServerSocket server;
-	RicartAgrawala RA;
 	
 	// Hashmaps used to store sockets, read and write buffers
     public static HashMap<String,Socket> socketMap = new HashMap<String,Socket>();
@@ -49,17 +48,21 @@ public class Node
 		{
 			// Bad way of reading config
 			// TODO: Fix later.
-			NUMNODES = ReadConfig.main();
+			InputOutputHandler IOH = new InputOutputHandler();
+			RicartAgrawala RA = new RicartAgrawala(IOH);
+			
+			NUMNODES = IOH.readConfig();
 			
 			System.out.println("TOTAL NODES:"+NUMNODES);
+			
 			//Must Be Run In A New Thread To Avoid Thread Blocking
-			ReceiveConnectionThread RCT = new ReceiveConnectionThread(nodeID,NUMNODES);
+			ReceiveConnectionThread RCT = new ReceiveConnectionThread(nodeID,NUMNODES,IOH);
 			System.out.println("Listener Started");
 			
 			// Sleep so that all servers/listeners can can be started
 			Thread.sleep(15000);
 			
-			SendConnectionThread SCT = new SendConnectionThread(nodeID,NUMNODES);
+			SendConnectionThread SCT = new SendConnectionThread(nodeID,NUMNODES,IOH);
 			
 			// Sleep so that socket connections can be made
 			Thread.sleep(5000);
@@ -69,7 +72,7 @@ public class Node
 			{
 				if (i!=nodeID)
 				{
-					ListenerThread RS = new ListenerThread(socketMap.get(Integer.toString(i)));
+					ListenerThread RS = new ListenerThread(socketMap.get(Integer.toString(i)),IOH, RA);
 					System.out.println("SocketID"+RS);
 					System.out.println("Started thread at "+nodeID+" for listening "+i);
 				}
@@ -109,7 +112,7 @@ public class Node
 						broadcast("START");
 					}
 				 }.start();
-				 RicartAgrawala.requestCriticalSection();
+				 RA.requestCriticalSection();
 			}
 		}
 		catch (Exception e)
@@ -117,14 +120,6 @@ public class Node
 			//TODO add error handling
 		}
 	}
-	
-	// Send message over a socket
-    public static void send(String str,Socket so)
-    {
-        PrintWriter writer = writers.get(so);
-        writer.println(str);
-        writer.flush();
-    }
     
     /**
 	* Broadcasts a message to all writers in the outputStreams arraylist.

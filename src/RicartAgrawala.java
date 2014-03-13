@@ -13,25 +13,31 @@ import java.util.Random;
 
 public class RicartAgrawala {
 	
-	static long requestTS;
-	static int criticalSectionCount = 0;
-	static boolean requestCS = false;
-	static boolean criticalSection = false;
-	static int nodeCompletetionCount = 0;
-	static boolean nodeZeroCompletetion = false;
-	static int replyCount = 0;
-	static long totalRequestsSent = 0;
-	static long timeElapsed = 0;
-	static long maxMessagesExchanged = 0;
-	static long minMessagesExchanged = 0;
+	InputOutputHandler IOH;
+	RicartAgrawala(InputOutputHandler IOH)
+	{
+		this.IOH = IOH;
+	}
 	
-	public static ArrayList<String> deferred = new ArrayList<String>();
-	public static ArrayList<String> participants = new ArrayList<String>();
-	static ArrayList<String> copyOfParticipants = new ArrayList<String>();
-	public static int participantsCount = 0;
+	public long requestTS;
+	public int criticalSectionCount = 0;
+	public boolean requestCS = false;
+	public boolean criticalSection = false;
+	public int nodeCompletetionCount = 0;
+	public boolean nodeZeroCompletetion = false;
+	public int replyCount = 0;
+	public long totalRequestsSent = 0;
+	public long timeElapsed = 0;
+	public long maxMessagesExchanged = 0;
+	public long minMessagesExchanged = 0;
+	
+	public ArrayList<String> deferred = new ArrayList<String>();
+	public ArrayList<String> participants = new ArrayList<String>();
+	public ArrayList<String> copyOfParticipants = new ArrayList<String>();
+	public int participantsCount = 0;
 	
 	// TODO Algorithm Class
-	public static void requestCriticalSection()
+	public void requestCriticalSection()
 	{
 		// limiting total no of desired critical sections
 		if (criticalSectionCount < 40)
@@ -48,7 +54,7 @@ public class RicartAgrawala {
 			}
 			
 			System.out.println(Node.nodeID+" ready to enter CS");
-			RicartAgrawala.requestCS = true;
+			requestCS = true;
 			
             java.util.Date date= new java.util.Date();
             //requestTS = new Timestamp(date.getTime());
@@ -91,12 +97,12 @@ public class RicartAgrawala {
             		new Thread()
     				{
             		public void run(){
-            		RicartAgrawala.criticalSection = true;
+            		criticalSection = true;
             		long currentTS1 = TimeStamp.getTimestamp();
-    	            WriteToFile.log(RicartAgrawala.requestTS,currentTS1,"entered");
+    	            IOH.log(requestTS,currentTS1,"entered");
 		            java.util.Date date1= new java.util.Date();
 		            long currentTS = TimeStamp.getTimestamp();
-					System.out.println("CRITICAL SECTION:"+ RicartAgrawala.criticalSectionCount +":"
+					System.out.println("CRITICAL SECTION:"+ criticalSectionCount +":"
 		            +currentTS);
 					
 					timeElapsed = currentTS - requestTS;
@@ -109,18 +115,18 @@ public class RicartAgrawala {
 						e1.printStackTrace();
 					}
 					
-					WriteToFile.report(" Messages:"+2*replyCount+" Time Elapsed:"+timeElapsed);
+					IOH.report(" Messages:"+2*replyCount+" Time Elapsed:"+timeElapsed);
 					
 					// Reset this node
-					RicartAgrawala.criticalSection = false;
-					RicartAgrawala.requestCS = false;
-					RicartAgrawala.replyCount = 0;
-					RicartAgrawala.criticalSectionCount++;
+					criticalSection = false;
+					requestCS = false;
+					replyCount = 0;
+					criticalSectionCount++;
 					long currentTS2 = TimeStamp.getTimestamp();
-		            WriteToFile.log(RicartAgrawala.requestTS,currentTS2,"exited");
-					RicartAgrawala.sendDeferredReplies();
+		            IOH.log(requestTS,currentTS2,"exited");
+					sendDeferredReplies();
 					
-					if (RicartAgrawala.criticalSectionCount> 20 && Node.nodeID % 2 == 0)
+					if (criticalSectionCount> 20 && Node.nodeID % 2 == 0)
 					{
 						Random rn1 = new Random();
 						int time1 = 200 + rn1.nextInt(300);
@@ -132,7 +138,7 @@ public class RicartAgrawala {
 							e.printStackTrace();
 						}
 					}
-					RicartAgrawala.requestCriticalSection();
+					requestCriticalSection();
     				}
     				}.start();
 					
@@ -166,7 +172,7 @@ public class RicartAgrawala {
 		{
 			System.out.println("GAMEOVER");
 			// TODO Implement Terminating Condition
-			WriteToFile.report(" Maximum Messages:"+maxMessagesExchanged
+			IOH.report(" Maximum Messages:"+maxMessagesExchanged
 					+" Minimum Messages:"+minMessagesExchanged);
 
 			if (Node.nodeID !=0)
@@ -179,10 +185,10 @@ public class RicartAgrawala {
 			else
 			{
 				nodeZeroCompletetion = true;
-				if (RicartAgrawala.nodeCompletetionCount == Node.NUMNODES-1)
+				if (nodeCompletetionCount == Node.NUMNODES-1)
 				{
 					System.out.println("ALLLLLL OVERRRRR:"+totalRequestsSent);
-					WriteToFile.report("TOTAL MESSAGES:"+totalRequestsSent);
+					IOH.report("TOTAL MESSAGES:"+totalRequestsSent);
 					/*try {
 						Thread.sleep(5000);
 					} catch (InterruptedException e) {
@@ -196,7 +202,7 @@ public class RicartAgrawala {
 		}
 	}
 	
-	public static void sendDeferredReplies()
+	public void sendDeferredReplies()
 	{
 		System.out.println("Sending deferred replies");
 		// TODO
@@ -221,14 +227,14 @@ public class RicartAgrawala {
 		deferred.clear();
 	}
 	
-	public static synchronized void checkCS()
+	public synchronized void checkCS()
 	{
 		//if (RicartAgrawala.replyCount == Node.NUMNODES-1)
-			if ((RicartAgrawala.criticalSectionCount == 0 && 
-					RicartAgrawala.replyCount == Node.NUMNODES-1) || 
-					RicartAgrawala.replyCount == RicartAgrawala.participantsCount)
+			if ((criticalSectionCount == 0 && 
+					replyCount == Node.NUMNODES-1) || 
+					replyCount == participantsCount)
 			{
-				RicartAgrawala.criticalSection = true;
+				criticalSection = true;
 				totalRequestsSent += (2*replyCount);
 				if (2*replyCount < minMessagesExchanged)
 				{
@@ -239,9 +245,9 @@ public class RicartAgrawala {
 	            Timestamp currentTS1 = new Timestamp(date.getTime());*/
 				
 				long currentTS1 = TimeStamp.getTimestamp();
-	            WriteToFile.log(RicartAgrawala.requestTS,currentTS1,"entered");
+	            IOH.log(requestTS,currentTS1,"entered");
 
-				System.out.println("CRITICAL SECTION:"+ RicartAgrawala.criticalSectionCount +":"
+				System.out.println("CRITICAL SECTION:"+ criticalSectionCount +":"
 	            +currentTS1);
 				
 				timeElapsed = currentTS1 - requestTS;
@@ -254,20 +260,20 @@ public class RicartAgrawala {
 					e.printStackTrace();
 				}
 				
-				WriteToFile.report(" Messages:"+2*replyCount+" Time Elapsed:"+timeElapsed);
+				IOH.report(" Messages:"+2*replyCount+" Time Elapsed:"+timeElapsed);
 				
 				// Reset this node
-				RicartAgrawala.criticalSection = false;
-				RicartAgrawala.requestCS = false;
-				RicartAgrawala.replyCount = 0;
-				RicartAgrawala.criticalSectionCount++;
+				criticalSection = false;
+				requestCS = false;
+				replyCount = 0;
+				criticalSectionCount++;
 				
 				/*java.util.Date date1= new java.util.Date();
 				Timestamp currentTS2 = new Timestamp(date1.getTime());*/
 				
 				long currentTS2 = TimeStamp.getTimestamp();
-				WriteToFile.log(RicartAgrawala.requestTS,currentTS2,"exited");
-				RicartAgrawala.sendDeferredReplies();
+				IOH.log(requestTS,currentTS2,"exited");
+				sendDeferredReplies();
 				
 				if (Node.nodeID % 2 == 0 && criticalSectionCount > 20)
 				{
@@ -281,11 +287,11 @@ public class RicartAgrawala {
 						e.printStackTrace();
 					}
 				}
-				RicartAgrawala.requestCriticalSection();
+				requestCriticalSection();
 			}
 	}
 	
-	public static synchronized void incrementCount() {
+	public synchronized void incrementCount() {
 		replyCount++;
     }
 }
