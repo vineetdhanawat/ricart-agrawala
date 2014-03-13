@@ -72,8 +72,8 @@ public class Node
 			{
 				if (i!=nodeID)
 				{
-					ListenerThread RS = new ListenerThread(socketMap.get(Integer.toString(i)),IOH, RA);
-					System.out.println("SocketID"+RS);
+					DaemonThread DT = new DaemonThread(socketMap.get(Integer.toString(i)),IOH, RA);
+					System.out.println("SocketID"+DT);
 					System.out.println("Started thread at "+nodeID+" for listening "+i);
 				}
 			}

@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.Random;
 import java.util.logging.Logger;
 
-public class ListenerThread extends Thread
+public class DaemonThread extends Thread
 {
 	long messageTS, currentTS;
 	Socket socket;
@@ -23,7 +23,7 @@ public class ListenerThread extends Thread
 	RicartAgrawala RA;
 	InputOutputHandler IOH;
 	
-	ListenerThread(Socket socket, InputOutputHandler IOH, RicartAgrawala RA)
+	DaemonThread(Socket socket, InputOutputHandler IOH, RicartAgrawala RA)
 	{
 		super();
 		start();
