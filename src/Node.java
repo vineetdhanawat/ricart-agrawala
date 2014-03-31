@@ -48,6 +48,7 @@ public class Node
 		{
 			// Bad way of reading config
 			// TODO: Fix later.
+			// Fixed?
 			InputOutputHandler IOH = new InputOutputHandler();
 			RicartAgrawala RA = new RicartAgrawala(IOH);
 			
@@ -77,30 +78,6 @@ public class Node
 					System.out.println("Started thread at "+nodeID+" for listening "+i);
 				}
 			}
-			
-			// TEST Broadcast
-			//broadcast("ALERT");
-			
-			// Node
-			//Thread.sleep(5000);
-            
-/*			Date date=new Date();
-			Timestamp timestamp = new Timestamp(date.getTime());//instead of date put your converted date
-			String ts = timestamp.toString();
-			System.out.println("timestamp="+ts);
-			
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
-			Date date2 = dateFormat.parse(ts);
-
-			Timestamp timestamp2 = new Timestamp(date.getTime());//instead of date put your converted date
-			System.out.println("converted ts="+timestamp2);*/
-			
-			// Adding initial participants list for optimization
-/*			for (int j=0; j < NUMNODES; j++)
-			{
-				RicartAgrawala.participants.add(String.valueOf(j));
-				//public static ArrayList<String> participants = new ArrayList<String>();
-			}*/
 			
 			// Initialization Message
 			if (nodeID == 0)
@@ -181,6 +158,9 @@ public class Node
 				}
 			}
 		}
+		
+		// Threads still not terminating
+		// TODO: Figure out alternative
 		System.exit(0);
 	}
 }

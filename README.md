@@ -25,17 +25,12 @@ Report the following
 4. A log-file for all nodes in the network, showing entering/leaving for each critical section
 
 ## Sample Config File
- # Any text following '#' should be ignored
-
- 3 # Total number of nodes
-
- #NodeID - HostName - Port
-
- 0 127.0.0.1 50000 # Location of node 0
-
- 1 127.0.0.1 51000 # Location of node 1
-
- 2 127.0.0.1 52000 # Location of node 2
+	# Any text following '#' should be ignored
+	3 # Total number of nodes
+	#NodeID - HostName - Port
+	0 127.0.0.1 50000 # Location of node 0
+	1 127.0.0.1 51000 # Location of node 1
+	2 127.0.0.1 52000 # Location of node 2
 
 ## Usage
 	$ java -jar ricartagrwala 0

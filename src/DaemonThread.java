@@ -45,7 +45,6 @@ public class DaemonThread extends Thread
 		{
 			while((message = BR.readLine() ) != null)
 			{
-				//System.out.println("RECEIVED MESSAGE:::" + message);
 				String tokens[] = message.split(",");
 				String messageType = tokens[0];
 				
@@ -54,7 +53,7 @@ public class DaemonThread extends Thread
 					RA.requestCriticalSection();
 				}
 				
-				// TODO Implement Terminating Condition
+				// Completion Message
 				if(messageType.equals("COMPLETE"))
 				{
 					RA.nodeCompletetionCount++;
@@ -75,6 +74,7 @@ public class DaemonThread extends Thread
 					}
 				}
 				
+				// Terminating Message
 				if(messageType.equals("HALT"))
 				{
 					//Thread.sleep(5000);
@@ -84,10 +84,9 @@ public class DaemonThread extends Thread
 				if(messageType.equals("REPLY"))
 				{
 					
-					//++RicartAgrawala.replyCount;
 					RA.incrementCount();
 
-					// optimization
+					// Roucairol-Carvalho optimization
 					RA.participants.remove(tokens[1]);
 					
 					System.out.println("REPLYCOUNT:"+RA.replyCount+":REPLYFROM"+tokens[1]);
@@ -98,28 +97,17 @@ public class DaemonThread extends Thread
 				{
 						
 					System.out.println("SERVER-TS REQUEST:"+RA.requestTS);
-					/*SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SS");
-					Date date = dateFormat.parse(tokens[1]);
-					messageTS = new Timestamp(date.getTime());*/
-					
-					//messageTS = Timestamp.valueOf(tokens[1]);
 					messageTS = Long.parseLong(tokens[1]);
 					
 					System.out.println("MESSAGE-TS REQUEST:"+tokens[2]+":"+messageTS);
 					System.out.println("----------------------------------");
 					
+					// Tricky comparisons. Read paper to understand
 					if(RA.criticalSection == false && 
 							((RA.requestCS == false)
 							|| (RA.requestCS == true && RA.requestTS > messageTS)
 							|| (RA.requestCS == true && RA.requestTS == messageTS
 							 && Node.nodeID > Integer.parseInt(tokens[2]))))
-					/*if(RicartAgrawala.criticalSection == false &&
-							(RicartAgrawala.requestCS == false ||
-							(RicartAgrawala.requestCS == true && 
-							(RicartAgrawala.requestTS.after(messageTS) || 
-									Node.nodeID > Integer.parseInt(tokens[2])))))*/
-						
-					
             		{
 						if (RA.requestCS == true && RA.criticalSection == false 
 			            		&& RA.criticalSectionCount != 0 && !(RA.copyOfParticipants.contains(tokens[2])))
@@ -138,9 +126,7 @@ public class DaemonThread extends Thread
 						writer.println("REPLY"+","+Node.nodeID);
 			            writer.flush();
 			            
-			            
-			            
-			            // optimization
+			            // Roucairol-Carvalho optimization
 			            RA.participants.add(tokens[2]);
             		}
 					else

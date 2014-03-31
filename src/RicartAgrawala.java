@@ -60,8 +60,12 @@ public class RicartAgrawala {
             //requestTS = new Timestamp(date.getTime());
 			requestTS = TimeStamp.getTimestamp();
             
+			// Special case to send request to all the nodes
+			// Subsequently request will be sent to nodes based on
+			// Roucairol-Carvalho optimization
             if (criticalSectionCount == 0)
             {
+            	// Initializing
             	maxMessagesExchanged = 2*(Node.NUMNODES-1);
             	minMessagesExchanged = 2*(Node.NUMNODES-1);
             	
@@ -86,9 +90,13 @@ public class RicartAgrawala {
             }
             else
             {
+            	// get nodes from dynamic list of participating processes
+            	// creating a local copy without messing global dynamic list
             	copyOfParticipants.clear();
             	copyOfParticipants.addAll(participants);
             	participantsCount = copyOfParticipants.size();
+            	
+            	// Participating list is empty means self CS execution
             	if (copyOfParticipants.isEmpty())
             	{
             		// self execution
@@ -126,6 +134,7 @@ public class RicartAgrawala {
 		            IOH.log(requestTS,currentTS2,"exited");
 					sendDeferredReplies();
 					
+					// Project requirements to introduce additional delay
 					if (criticalSectionCount> 20 && Node.nodeID % 2 == 0)
 					{
 						Random rn1 = new Random();
@@ -171,7 +180,6 @@ public class RicartAgrawala {
 		else
 		{
 			System.out.println("GAMEOVER");
-			// TODO Implement Terminating Condition
 			IOH.report(" Maximum Messages:"+maxMessagesExchanged
 					+" Minimum Messages:"+minMessagesExchanged);
 
@@ -202,6 +210,7 @@ public class RicartAgrawala {
 		}
 	}
 	
+
 	public void sendDeferredReplies()
 	{
 		System.out.println("Sending deferred replies");
@@ -240,9 +249,6 @@ public class RicartAgrawala {
 				{
 					minMessagesExchanged = 2*replyCount;
 				}
-	            
-				/*java.util.Date date= new java.util.Date();
-	            Timestamp currentTS1 = new Timestamp(date.getTime());*/
 				
 				long currentTS1 = TimeStamp.getTimestamp();
 	            IOH.log(requestTS,currentTS1,"entered");
@@ -267,9 +273,6 @@ public class RicartAgrawala {
 				requestCS = false;
 				replyCount = 0;
 				criticalSectionCount++;
-				
-				/*java.util.Date date1= new java.util.Date();
-				Timestamp currentTS2 = new Timestamp(date1.getTime());*/
 				
 				long currentTS2 = TimeStamp.getTimestamp();
 				IOH.log(requestTS,currentTS2,"exited");

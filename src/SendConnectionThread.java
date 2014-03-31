@@ -24,6 +24,7 @@ public class SendConnectionThread extends Thread
 		Socket socket;
 		for(int i=0;i<NUMNODES;i++)
 		{
+			// Send connection to all nodes with nodeID > current node
 			if (nodeID < i)
 			{
 				String host = IOH.map.get(Integer.toString(i)).get(0);
